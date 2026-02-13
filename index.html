@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Track your expenses and income with our beautiful, modern expense tracker. Manage your finances with ease.">
+    <title>Expense Tracker - Manage Your Finances</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-gradient"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="20" cy="20" r="18" fill="url(#gradient1)" opacity="0.2" />
+                    <path d="M20 8V32M12 20H28" stroke="url(#gradient2)" stroke-width="3" stroke-linecap="round" />
+                    <defs>
+                        <linearGradient id="gradient1" x1="2" y1="2" x2="38" y2="38">
+                            <stop offset="0%" stop-color="#667eea" />
+                            <stop offset="100%" stop-color="#764ba2" />
+                        </linearGradient>
+                        <linearGradient id="gradient2" x1="8" y1="8" x2="32" y2="32">
+                            <stop offset="0%" stop-color="#667eea" />
+                            <stop offset="100%" stop-color="#764ba2" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h1>Expense Tracker</h1>
+            </div>
+            <div class="header-right">
+                <button id="downloadBtn" class="download-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Download Report
+                </button>
+                <div class="date-display" id="currentDate"></div>
+            </div>
+        </header>
+
+        <div class="balance-card">
+            <div class="balance-content">
+                <div class="balance-label">Total Balance</div>
+                <div class="balance-amount" id="totalBalance">$0.00</div>
+                <div class="balance-stats">
+                    <div class="stat-item income-stat">
+                        <div class="stat-icon">↑</div>
+                        <div class="stat-details">
+                            <div class="stat-label">Income</div>
+                            <div class="stat-value" id="totalIncome">$0.00</div>
+                        </div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item expense-stat">
+                        <div class="stat-icon">↓</div>
+                        <div class="stat-details">
+                            <div class="stat-label">Expenses</div>
+                            <div class="stat-value" id="totalExpense">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="add-transaction-card">
+            <h2>Add New Transaction</h2>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" id="description" placeholder="e.g., Grocery shopping" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" placeholder="0.00" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="food">Food & Dining</option>
+                            <option value="transport">Transportation</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="bills">Bills & Utilities</option>
+                            <option value="salary">Salary</option>
+                            <option value="freelance">Freelance</option>
+                            <option value="investment">Investment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="transaction-type">
+                    <label class="type-option">
+                        <input type="radio" name="type" value="credit" id="creditType" required>
+                        <span class="type-button credit-button">
+                            <span class="type-icon">↑</span>
+                            <span>Credit (Income)</span>
+                        </span>
+                    </label>
+                    <label class="type-option">
+                        <input type="radio" name="type" value="debit" id="debitType" required>
+                        <span class="type-button debit-button">
+                            <span class="type-icon">↓</span>
+                            <span>Debit (Expense)</span>
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span>Add Transaction</span>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <div class="transactions-section">
+            <div class="section-header">
+                <h2>Transaction History</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="credit">Credit</button>
+                    <button class="filter-btn" data-filter="debit">Debit</button>
+                </div>
+            </div>
+
+            <div class="transactions-list" id="transactionsList">
+                <div class="empty-state">
+                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                        <circle cx="40" cy="40" r="35" stroke="url(#emptyGradient)" stroke-width="2" opacity="0.3" />
+                        <path d="M40 25V55M25 40H55" stroke="url(#emptyGradient)" stroke-width="3"
+                            stroke-linecap="round" />
+                        <defs>
+                            <linearGradient id="emptyGradient" x1="0" y1="0" x2="80" y2="80">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <p>No transactions yet</p>
+                    <span>Add your first transaction to get started</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 Expense Tracker. Created by @KANISHK R K</p>
+    </footer>
+
+    <!-- Report Generation Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Generate Report</h2>
+            <div class="form-group">
+                <label for="reportType">Report Type</label>
+                <select id="reportType">
+                    <option value="daily">Daily</option>
+                    <option value="monthly" selected>Monthly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="dateInputGroup">
+                <label for="reportDate">Select Date</label>
+                <input type="date" id="reportDate">
+            </div>
+
+            <div class="form-group hidden" id="monthInputGroup">
+                <label for="reportMonth">Select Month</label>
+                <input type="month" id="reportMonth">
+            </div>
+
+            <div class="form-group hidden" id="yearInputGroup">
+                <label for="reportYear">Select Year</label>
+                <select id="reportYear"></select>
+            </div>
+
+            <button id="generateReportBtn" class="submit-btn">Generate PDF</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
